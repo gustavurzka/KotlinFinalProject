@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "272277015809",
+    "firebase_url": "https://stopgamehelper.firebaseio.com",
+    "project_id": "stopgamehelper",
+    "storage_bucket": "stopgamehelper.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:272277015809:android:f1bc00256c3f8e5accdf00",
+        "android_client_info": {
+          "package_name": "com.example.stopgamehelper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "272277015809-jqs24mpuhsu5ir6ac2k61h4rb7vjugpm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBlW8sMa-5BtaL7nEymkrm4VwLhlL6D5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "272277015809-jqs24mpuhsu5ir6ac2k61h4rb7vjugpm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
