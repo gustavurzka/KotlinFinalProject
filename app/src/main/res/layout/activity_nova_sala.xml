@@ -15,6 +15,7 @@
         android:theme="@style/AppTheme.Toolbar"
         app:layout_scrollFlags="scroll|enterAlways" />
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:text="Número de itens" />
+            android:text="Número de itens: " />
 
         <EditText
             android:id="@+id/etItens"
@@ -36,11 +37,13 @@
     </LinearLayout>
 
         <RadioGroup
+            android:id="@+id/rgDificuldade"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:checkedButton="@id/rbFacil">
 
             <RadioButton
                 android:id="@+id/rbFacil"
@@ -61,13 +64,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 android:text="Difícil" />
         </RadioGroup>
 
         <TextView
             android:id="@+id/tvInf"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Para um jogo rápido, as letras H, K, Q, W, X, Y e Z não estarão no jogo"
+            android:textSize="10sp"
+            android:layout_gravity="center"/>
+
+    <Button
+        android:id="@+id/btnCriarSala"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center|bottom"
+        android:text="Nova Sala"
+        android:textColor="@color/colorTextDark"
+        android:textSize="15sp"/>
 
 
 
