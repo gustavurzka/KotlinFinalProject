@@ -1,5 +1,9 @@
 package com.example.stopgamehelper.Model
 
-class Jogador(var nome : String) {
+import java.io.Serializable
+
+class Jogador(var nome : String) : Serializable {
     var id = ""
+
+    constructor() : this("")
 }
