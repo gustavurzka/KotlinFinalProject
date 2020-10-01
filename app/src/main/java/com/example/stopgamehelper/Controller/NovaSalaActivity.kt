@@ -1,11 +1,12 @@
 package com.example.stopgamehelper.Controller
 
+import android.content.Intent
+import android.media.session.MediaSession
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.stopgamehelper.Model.Alfabeto
-import com.example.stopgamehelper.Model.Jogador
-import com.example.stopgamehelper.Model.Keys
-import com.example.stopgamehelper.Model.Sala
+import android.util.Log
+import android.widget.Toast
+import com.example.stopgamehelper.Model.*
 import com.example.stopgamehelper.R
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_nova_sala.*
@@ -13,7 +14,8 @@ import kotlin.random.Random
 
 class NovaSalaActivity : AppCompatActivity() {
 
-    var jogador: String? = ""
+    var jogador: Jogador? = null
+    var sala: Sala? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +23,7 @@ class NovaSalaActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val db = FirebaseFirestore.getInstance()
         supportActionBar?.title = "Criar nova sala"
-        jogador = intent.getStringExtra("jogador")
+        jogador = intent.getSerializableExtra("jogador") as Jogador?
 
         rgDificuldade.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.rbFacil) {
@@ -36,7 +38,8 @@ class NovaSalaActivity : AppCompatActivity() {
 
         btnCriarSala.setOnClickListener {
             var jogadores = mutableListOf<Jogador>()
-            var alfabeto: List<Char>
+            jogadores.add(jogador!!)
+            var alfabeto: List<String>
             if (rbFacil.isChecked) {
                 alfabeto = Alfabeto.ALFABETO_FACIL.letras
             } else if (rbMedio.isChecked) {
@@ -45,18 +48,42 @@ class NovaSalaActivity : AppCompatActivity() {
                 alfabeto = Alfabeto.ALFABETO_DIFICIL.letras
             }
 
-            jogadores.add(Jogador(jogador!!))
-            var sala = Sala(
-                jogador!!,
+            sala = Sala(
+                jogador!!.nome,
                 etItens.text.toString().toInt() * 10,
                 jogadores,
                 null,
                 alfabeto,
                 null
             )
-            sala.numero = Random.nextInt(0, 5000)
-            db.collection(Keys.SALAS.valor)
+            sala!!.numero = Random.nextInt(0, 5000)
 
+            db.collection(Keys.SALAS.valor).get()
+                .addOnSuccessListener {
+                    for (item in it!!) {
+                        if (sala!!.numero == item.toObject(Sala::class.java).numero) {
+                            Toast.makeText(
+                                this@NovaSalaActivity,
+                                "Ocorreu um erro tente novamente",
+                                Toast.LENGTH_SHORT
+                            )
+                            sala!!.numero = Random.nextInt(0, 5000)
+                            return@addOnSuccessListener
+                        }
+                    }
+                    sala!!.status = Status.SALA_ABERTA.estado
+                    db.collection(Keys.SALAS.valor).add(sala!!).addOnSuccessListener {
+                        var intent = Intent(this@NovaSalaActivity, SalaActivity::class.java).apply {
+                            putExtra("jogador", jogador)
+                            putExtra("sala", sala)
+                            putExtra("criador", true)
+                        }
+                        startActivity(intent)
+
+                    }.addOnFailureListener {
+                        Log.e("Falha", "Falha ao adicionar sala ${it.message}")
+                    }
+                }
         }
     }
 }

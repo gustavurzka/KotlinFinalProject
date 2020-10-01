@@ -7,8 +7,8 @@ class Sala(
     var pontuacaoMax: Int = 0,
     var participantes: List<Jogador> = emptyList(),
     var rodadas: List<Rodada>?= emptyList(),
-    var letras: List<Char> = emptyList(),
-    var letrarUsadas: List<Char>? = emptyList(),
+    var letras: List<String> = emptyList(),
+    var letrarUsadas: List<String>? = emptyList(),
 ) : Serializable {
     var numero = 0;
     var status = 0;

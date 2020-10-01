@@ -5,9 +5,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.example.stopgamehelper.Model.Jogador
 import com.example.stopgamehelper.Model.Keys
 import com.example.stopgamehelper.Model.Sala
+import com.example.stopgamehelper.Model.Status
 import com.example.stopgamehelper.R
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
@@ -31,17 +34,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Bem Vindo(a)"
 
-        var jogadores = HashMap<String, Jogador>()
-        db.collection(Keys.USUARIOS.valor).get().addOnSuccessListener { result ->
-            if (result.isEmpty) {
-                Log.e("Banco", "O Banco ainda está vazio")
-            } else {
-                for (document in result) {
-                   var jogador = document.toObject(Jogador::class.java)
-                    Log.e("teste", "Vê se imprime isso ${jogador.nome}")
-                }
-            }
-        }
 
         val preferences =
             getSharedPreferences(getString(R.string.preferences), Context.MODE_PRIVATE)
@@ -58,34 +50,144 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnLogIn.setOnClickListener {
+            if (etNomeJogador.text.isNullOrEmpty() || etCodSala.text.isNullOrEmpty()) {
+                return@setOnClickListener
+            }
+            if (userId.isNullOrEmpty() || userName.isNullOrEmpty()) {
+                jogador = Jogador(etNomeJogador.text.toString())
+                db.collection(Keys.USUARIOS.valor).add(jogador!!).addOnSuccessListener {
+                    jogador!!.id = it.id
+                    preferences.edit().apply {
+                        putString(getString(R.string.pref_userid), it.id)
+                        putString(getString(R.string.pref_username), etNomeJogador.text.toString())
+                        commit()
+                    }
+                    db.collection(Keys.USUARIOS.valor).document(it.id).set(jogador!!)
+                    db.collection(Keys.SALAS.valor)
+                        .whereEqualTo("numero", etCodSala.text.toString().toInt()).get()
+                        .addOnSuccessListener {
+                            var salaEncontrada = Sala()
+                            if (it.isEmpty) {
+                                val dialog = AlertDialog.Builder(this@MainActivity)
+                                dialog.setTitle("Sala não encontrada")
+                                dialog.setMessage("A sala com o código digitado não foi encontrada")
+                                dialog.setCancelable(true)
+                                dialog.show()
+                                return@addOnSuccessListener
+                            }
+                            for (sala in it) {
+                                salaEncontrada = sala.toObject(Sala::class.java)
+                                if (salaEncontrada.status == Status.SALA_FECHADA.estado) {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "A sala que você está procurando ja está em jogo",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    return@addOnSuccessListener
+                                }
+                            }
+                            var intent = Intent(this@MainActivity, SalaActivity::class.java).apply {
+                                putExtra(Keys.JOGADOR.valor, jogador)
+                                putExtra(Keys.SALA.valor, salaEncontrada)
+                                putExtra("criador", false)
+                            }
+                            startActivity(intent)
+                        }
+                    Log.d("Sucesso", "Sucesso ao adiocionar")
+                }.addOnFailureListener {
+
+                    Log.d("Falha", "Erro ao adicionar")
+                }
+            } else {
+                jogador = Jogador(etNomeJogador.text.toString())
+                jogador!!.id = userId!!
+                db.collection(Keys.USUARIOS.valor).document(userId!!).set(jogador!!)
+                    .addOnSuccessListener {
+                        preferences.edit().apply {
+                            putString(getString(R.string.pref_userid), userId)
+                            putString(
+                                getString(R.string.pref_username),
+                                etNomeJogador.text.toString()
+                            )
+                            commit()
+                        }
+                        db.collection(Keys.SALAS.valor)
+                            .whereEqualTo("numero", etCodSala.text.toString().toInt()).get()
+                            .addOnSuccessListener {
+                                var salaEncontrada = Sala()
+                                if (it.isEmpty) {
+                                    val dialog = AlertDialog.Builder(this@MainActivity)
+                                    dialog.setTitle("Sala não encontrada")
+                                    dialog.setMessage("A sala com o código digitado não foi encontrada")
+                                    dialog.setCancelable(true)
+                                    dialog.show()
+                                    return@addOnSuccessListener
+                                }
+                                for (sala in it) {
+                                    salaEncontrada = sala.toObject(Sala::class.java)
+                                    if (salaEncontrada.status == Status.SALA_FECHADA.estado) {
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "A sala que você está procurando ja está em jogo",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        return@addOnSuccessListener
+                                    }
+                                }
+                                var intent =
+                                    Intent(this@MainActivity, SalaActivity::class.java).apply {
+                                        putExtra(Keys.JOGADOR.valor, jogador)
+                                        putExtra(Keys.SALA.valor, salaEncontrada)
+                                        putExtra("criador", false)
+                                    }
+                                startActivity(intent)
+                            }
+                    }
+            }
+        }
+        btnNovaSala.setOnClickListener {
+            if (etNomeJogador.text.isNullOrEmpty()) {
+                return@setOnClickListener
+            }
             if (userId.isNullOrEmpty() && userName.isNullOrEmpty()) {
                 jogador = Jogador(etNomeJogador.text.toString())
                 db.collection(Keys.USUARIOS.valor).add(jogador!!).addOnSuccessListener {
                     jogador!!.id = it.id
                     preferences.edit().apply {
-                        putString(getString(R.string.pref_userid),it.id)
-                        putString(getString(R.string.pref_username),userName)
+                        putString(getString(R.string.pref_userid), it.id)
+                        putString(getString(R.string.pref_username), etNomeJogador.text.toString())
                         commit()
                     }
+                    db.collection(Keys.USUARIOS.valor).document(it.id).set(jogador!!)
+                    var intent = Intent(this@MainActivity, NovaSalaActivity::class.java).apply {
+                        putExtra(Keys.JOGADOR.valor, jogador)
+                    }
+                    startActivity(intent)
                     Log.d("Sucesso", "Sucesso ao adiocionar")
                 }.addOnFailureListener {
+
                     Log.d("Falha", "Erro ao adicionar")
                 }
-            }else{
+            } else {
                 jogador = Jogador(etNomeJogador.text.toString())
                 jogador!!.id = userId!!
-                var intent = Intent(this@MainActivity, Sala::class.java).apply {
-                    putExtra(Keys.JOGADOR.valor, jogador)
-                    //Colocar a sala aqui
-                }
-            }
-        }
-
-        btnNovaSala.setOnClickListener {
-            preferences.edit().apply() {
-                putString(getString(R.string.pref_username), etNomeJogador.text.toString())
+                db.collection(Keys.USUARIOS.valor).document(userId!!).set(jogador!!)
+                    .addOnSuccessListener {
+                        preferences.edit().apply {
+                            putString(getString(R.string.pref_userid), userId)
+                            putString(getString(R.string.pref_username), etNomeJogador.text.toString())
+                            commit()
+                        }
+                        var intent = Intent(this@MainActivity, NovaSalaActivity::class.java).apply {
+                            putExtra(Keys.JOGADOR.valor, jogador)
+                        }
+                        startActivity(intent)
+                    }
             }
         }
     }
-}
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+}
