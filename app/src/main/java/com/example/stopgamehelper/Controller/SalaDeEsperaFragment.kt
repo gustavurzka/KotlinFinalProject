@@ -45,10 +45,11 @@ class SalaDeEsperaFragment : Fragment() {
         btnIniciar = view.findViewById(R.id.btnIniciar)
 
         rcvPart!!.layoutManager = LinearLayoutManager(context)
+        rcvPart!!.adapter = adapter
+        tvSala!!.text = sala.numero.toString()
 
         sala.participantes?.add(jogador)
 
-        db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
 
         db.collection(Keys.SALAS.valor).document(sala.numero.toString()).addSnapshotListener{data, error ->
             if(error != null){
@@ -57,13 +58,16 @@ class SalaDeEsperaFragment : Fragment() {
             }
             if(data != null){
                 sala = data.toObject(Sala::class.java)!!
+                adapter.clear()
                 for(participante in sala.participantes!!){
                     adapter.add(JogadorItem(participante))
                     adapter.notifyDataSetChanged()
                 }
+                tvPart!!.text = "${sala.participantes!!.count().toString()} Participantes em sala"
             }
         }
 
+        db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
 
         btnIniciar!!.setOnClickListener {
             if(!criador!!){
