@@ -5,10 +5,10 @@ import java.io.Serializable
 class Sala(
     var criador: String = "",
     var pontuacaoMax: Int = 0,
-    var participantes: List<Jogador> = emptyList(),
-    var rodadas: List<Rodada>?= emptyList(),
-    var letras: List<String> = emptyList(),
-    var letrarUsadas: List<String>? = emptyList(),
+    var participantes: MutableList<Jogador>? = null,
+    var rodadas: MutableList<Rodada>?= null,
+    var letras: MutableList<String>? = null,
+    var letrarUsadas: MutableList<String>? = null,
 ) : Serializable {
     var numero = 0;
     var status = 0;

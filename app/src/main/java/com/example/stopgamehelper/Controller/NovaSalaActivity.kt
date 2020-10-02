@@ -23,7 +23,7 @@ class NovaSalaActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val db = FirebaseFirestore.getInstance()
         supportActionBar?.title = "Criar nova sala"
-        jogador = intent.getSerializableExtra("jogador") as Jogador?
+        jogador = intent.getSerializableExtra(Keys.JOGADOR.valor) as Jogador?
 
         rgDificuldade.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.rbFacil) {
@@ -38,7 +38,6 @@ class NovaSalaActivity : AppCompatActivity() {
 
         btnCriarSala.setOnClickListener {
             var jogadores = mutableListOf<Jogador>()
-            jogadores.add(jogador!!)
             var alfabeto: List<String>
             if (rbFacil.isChecked) {
                 alfabeto = Alfabeto.ALFABETO_FACIL.letras
@@ -67,12 +66,11 @@ class NovaSalaActivity : AppCompatActivity() {
                                 "Ocorreu um erro tente novamente",
                                 Toast.LENGTH_SHORT
                             )
-                            sala!!.numero = Random.nextInt(0, 5000)
                             return@addOnSuccessListener
                         }
                     }
                     sala!!.status = Status.SALA_ABERTA.estado
-                    db.collection(Keys.SALAS.valor).add(sala!!).addOnSuccessListener {
+                    db.collection(Keys.SALAS.valor).document(sala!!.numero.toString()).set(sala!!).addOnSuccessListener {
                         var intent = Intent(this@NovaSalaActivity, SalaActivity::class.java).apply {
                             putExtra("jogador", jogador)
                             putExtra("sala", sala)
