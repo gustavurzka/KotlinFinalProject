@@ -8,7 +8,7 @@ class Sala(
     var participantes: MutableList<Jogador>? = null,
     var rodadas: MutableList<Rodada>?= null,
     var letras: MutableList<String>? = null,
-    var letrarUsadas: MutableList<String>? = null,
+    var letraUsada: String? = null,
 ) : Serializable {
     var numero = 0;
     var status = 0;

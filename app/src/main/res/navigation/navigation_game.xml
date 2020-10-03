@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_sala_de_espera" >
         <action
             android:id="@+id/action_salaDeEsperaFragment_to_emJogoFragment"
-            app:destination="@id/emJogoFragment" />
+            app:destination="@id/emJogoFragment"
+            app:popUpTo="@id/salaDeEsperaFragment"
+            app:popUpToInclusive="true"/>
     </fragment>
     <fragment
         android:id="@+id/emJogoFragment"
@@ -21,7 +23,9 @@
         tools:layout="@layout/fragment_em_jogo" >
         <action
             android:id="@+id/action_emJogoFragment_to_fimDeRodadaFragment"
-            app:destination="@id/fimDeRodadaFragment" />
+            app:destination="@id/fimDeRodadaFragment"
+            app:popUpTo="@id/emJogoFragment"
+            app:popUpToInclusive="true"/>
     </fragment>
     <fragment
         android:id="@+id/fimDeRodadaFragment"
@@ -30,7 +34,10 @@
         tools:layout="@layout/fragment_fim_de_rodada" >
         <action
             android:id="@+id/action_fimDeRodadaFragment_to_emJogoFragment"
-            app:destination="@id/emJogoFragment" />
+            app:destination="@id/emJogoFragment"
+            app:popUpTo="@id/fimDeRodadaFragment"
+            app:popUpToInclusive="true"
+            />
     </fragment>
     <fragment
         android:id="@+id/fimDeJogoFragment"

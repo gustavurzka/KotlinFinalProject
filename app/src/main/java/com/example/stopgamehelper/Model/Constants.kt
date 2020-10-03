@@ -8,12 +8,17 @@ enum class Alfabeto(var letras: MutableList<String>) {
 
 enum class Status(var estado: Int){
      SALA_ABERTA(1),
-     SALA_FECHADA(2);
+     SALA_FECHADA(2),
+     SALA_EMJOGO(3),
+     STOP(4),
+     FIMDERODADA(5)
+
 }
 
 enum class Keys(var valor: String){
      USUARIOS("usuarios"),
      SALAS("salas"),
      JOGADOR("jogador"),
-     SALA("sala")
+     SALA("sala"),
+     RODADA("rodada")
 }

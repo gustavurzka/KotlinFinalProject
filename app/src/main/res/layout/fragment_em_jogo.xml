@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Controller.EmJogoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+
     <TextView
+        android:id="@+id/tvLetra"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|center_horizontal"
+        android:text="A"
+        android:textSize="220sp"
+        android:textStyle="bold"
+        android:layout_marginTop="30dp"
+        android:textAlignment="center"
+        android:paddingTop="20dp"/>
+
+    <Button
+        android:id="@+id/btnStop"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:text="STOP"
+        android:textSize="80sp"
+        android:layout_margin="30dp"
+        android:textColor="@color/colorTextDark"
+        android:background="@color/colorStopButton"/>
 
-</FrameLayout>
+</LinearLayout>

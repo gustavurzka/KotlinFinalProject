@@ -5,56 +5,81 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
+import com.example.stopgamehelper.Model.*
 import com.example.stopgamehelper.R
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlin.random.Random
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [EmJogoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class EmJogoFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    var tvLetra: TextView? = null
+    var btnStop: Button? = null
+    var rodada: Rodada? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_em_jogo, container, false)
-    }
+        val view = inflater.inflate(R.layout.fragment_em_jogo, container, false)
+        var db = FirebaseFirestore.getInstance()
+        (activity as SalaActivity).supportActionBar?.title = "Em Jogo"
+        rodada = Rodada()
+        tvLetra = view.findViewById(R.id.tvLetra)
+        btnStop = view.findViewById(R.id.btnStop)
+        var jogador = arguments?.get(Keys.JOGADOR.valor) as Jogador
+        var sala = arguments?.get(Keys.SALA.valor) as Sala
+        var criador = arguments?.getBoolean("criador")
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment EmJogoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            EmJogoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+        var r = Random.nextInt(1, sala.letras!!.size)
+        var letra = sala.letras!!.get(r)
+        if(criador!!) {
+            rodada!!.letra = letra
+            sala.letras!!.remove(letra)
+            sala.status = Status.SALA_EMJOGO.estado
+            sala.letraUsada = letra
+            db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
+        }
+        db.collection(Keys.SALAS.valor).document(sala.numero.toString()).get().addOnSuccessListener {
+                sala = it.toObject(Sala::class.java)!!
+                tvLetra!!.text = sala.letraUsada
+            }
+
+
+        btnStop!!.setOnClickListener {
+            sala!!.status = Status.STOP.estado
+            db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
+        }
+
+        db.collection(Keys.SALAS.valor).document(sala.numero.toString())
+            .addSnapshotListener { data, error ->
+                if (error != null) {
+                    Toast.makeText(context, "Ocorreu um erro ${error.message}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                if (data != null) {
+                    sala = data.toObject(Sala::class.java)!!
+                    if (sala.status == Status.STOP.estado) {
+                        val bundle = bundleOf(
+                            Keys.SALA.valor to sala,
+                            Keys.JOGADOR.valor to jogador,
+                            "criador" to criador,
+                            Keys.RODADA.valor to rodada
+                        )
+                        findNavController().navigate(
+                            R.id.action_emJogoFragment_to_fimDeRodadaFragment,
+                            bundle
+                        )
+                    }
                 }
             }
+        return view
     }
+
+
 }
+

@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                             }
                             for (sala in it) {
                                 salaEncontrada = sala.toObject(Sala::class.java)
-                                if (salaEncontrada.status == Status.SALA_FECHADA.estado) {
+                                if (salaEncontrada.status != Status.SALA_ABERTA.estado) {
                                     Toast.makeText(
                                         this@MainActivity,
                                         "A sala que você está procurando ja está em jogo",

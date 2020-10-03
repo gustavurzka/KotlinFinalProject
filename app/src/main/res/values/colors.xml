@@ -4,6 +4,7 @@
     <color name="colorPrimary">#1338A3</color>
     <color name="colorPrimaryDark">#1643C6</color>
     <color name="colorAccent">#FFC107</color>
+    <color name="colorStopButton">#FF0000</color>
     <!-- Cores de Texto -->
     <color name="colorText">#333333</color>
     <color name="colorTextDark">#EEEEEE</color>

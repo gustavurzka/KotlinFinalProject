@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.stopgamehelper.Model.Keys
@@ -20,10 +22,10 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 
 class SalaDeEsperaFragment : Fragment() {
-    var tvSala : TextView? = null
-    var tvPart : TextView? = null
-    var rcvPart : RecyclerView? = null
-    var btnIniciar : Button? = null
+    var tvSala: TextView? = null
+    var tvPart: TextView? = null
+    var rcvPart: RecyclerView? = null
+    var btnIniciar: Button? = null
 
 
     override fun onCreateView(
@@ -51,32 +53,48 @@ class SalaDeEsperaFragment : Fragment() {
         sala.participantes?.add(jogador)
 
 
-        db.collection(Keys.SALAS.valor).document(sala.numero.toString()).addSnapshotListener{data, error ->
-            if(error != null){
-                Toast.makeText(context, "Ocorreu um erro ${error.message}", Toast.LENGTH_LONG)
-                return@addSnapshotListener
-            }
-            if(data != null){
-                sala = data.toObject(Sala::class.java)!!
-                adapter.clear()
-                for(participante in sala.participantes!!){
-                    adapter.add(JogadorItem(participante))
-                    adapter.notifyDataSetChanged()
+        db.collection(Keys.SALAS.valor).document(sala.numero.toString())
+            .addSnapshotListener { data, error ->
+                if (error != null) {
+                    Toast.makeText(context, "Ocorreu um erro ${error.message}", Toast.LENGTH_LONG)
+                    return@addSnapshotListener
                 }
-                tvPart!!.text = "${sala.participantes!!.count().toString()} Participantes em sala"
+                if (data != null) {
+                    sala = data.toObject(Sala::class.java)!!
+                    adapter.clear()
+                    for (participante in sala.participantes!!) {
+                        adapter.add(JogadorItem(participante))
+                        adapter.notifyDataSetChanged()
+                    }
+                    tvPart!!.text =
+                        "${sala.participantes!!.count().toString()} Participantes em sala"
+                }
+                if (sala.status == Status.SALA_FECHADA.estado) {
+                    val bundle = bundleOf(
+                        Keys.SALA.valor to sala,
+                        Keys.JOGADOR.valor to jogador,
+                        "criador" to criador
+                    )
+                    findNavController().navigate(
+                        R.id.action_salaDeEsperaFragment_to_emJogoFragment,
+                        bundle
+                    )
+                }
             }
-        }
 
         db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
 
         btnIniciar!!.setOnClickListener {
-            if(!criador!!){
-                Toast.makeText(context,"Somente o criador da sala pode começar o jogo", Toast.LENGTH_SHORT)
+            if (!criador!!) {
+                Toast.makeText(
+                    context,
+                    "Somente o criador da sala pode começar o jogo",
+                    Toast.LENGTH_SHORT
+                )
                 return@setOnClickListener
             }
             sala.status = Status.SALA_FECHADA.estado
             db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
-
         }
 
         return view
