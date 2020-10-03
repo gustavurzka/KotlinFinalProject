@@ -11,6 +11,7 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".Controller.NovaSalaActivity"></activity>
         <activity android:name=".Controller.SalaActivity" />
+        <activity android:name=".Controller.FimDeJogoActivity"/>
         <activity android:name=".Controller.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,6 +1,7 @@
 package com.example.stopgamehelper.Controller
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -37,21 +38,24 @@ class EmJogoFragment : Fragment() {
 
         var r = Random.nextInt(1, sala.letras!!.size)
         var letra = sala.letras!!.get(r)
-        if(criador!!) {
-            rodada!!.letra = letra
             sala.letras!!.remove(letra)
+            rodada!!.letra = letra
             sala.status = Status.SALA_EMJOGO.estado
             sala.letraUsada = letra
+        if (criador!!) {
             db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
+        }else{
+            Log.e("nada", "não é pra fazer nada")
         }
-        db.collection(Keys.SALAS.valor).document(sala.numero.toString()).get().addOnSuccessListener {
-                sala = it.toObject(Sala::class.java)!!
-                tvLetra!!.text = sala.letraUsada
-            }
-
+//        db.collection(Keys.SALAS.valor).document(sala.numero.toString()).get()
+//            .addOnSuccessListener {
+//                sala = it.toObject(Sala::class.java)!!
+//                rodada!!.letra = sala.letraUsada.toString()
+//                tvLetra!!.text = sala.letraUsada.toString()
+//            }
 
         btnStop!!.setOnClickListener {
-            sala!!.status = Status.STOP.estado
+            sala.status = Status.STOP.estado
             db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
         }
 
@@ -63,6 +67,8 @@ class EmJogoFragment : Fragment() {
                 }
                 if (data != null) {
                     sala = data.toObject(Sala::class.java)!!
+                    rodada!!.letra = sala.letraUsada.toString()
+                    tvLetra!!.text = sala.letraUsada
                     if (sala.status == Status.STOP.estado) {
                         val bundle = bundleOf(
                             Keys.SALA.valor to sala,
@@ -74,13 +80,10 @@ class EmJogoFragment : Fragment() {
                             R.id.action_emJogoFragment_to_fimDeRodadaFragment,
                             bundle
                         )
-
                     }
                 }
             }
         return view
     }
-
-
 }
 

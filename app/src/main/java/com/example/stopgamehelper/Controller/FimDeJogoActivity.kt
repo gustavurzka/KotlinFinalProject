@@ -10,23 +10,33 @@ import com.example.stopgamehelper.Model.Jogador
 import com.example.stopgamehelper.Model.Keys
 import com.example.stopgamehelper.Model.Sala
 import com.example.stopgamehelper.R
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_sala.*
 
 class FimDeJogoActivity : AppCompatActivity() {
-    var sala : Sala? = null
-    var jogador : Jogador? = null
-    var criador :  Boolean? = false
+    var sala: Sala? = null
+    var jogador: Jogador? = null
+    var criador: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sala)
+        setContentView(R.layout.activity_fim_de_jogo)
         setSupportActionBar(toolbar)
-        sala = intent.getSerializableExtra(Keys.SALA.valor) as Sala?
-        jogador = intent.getSerializableExtra(Keys.JOGADOR.valor) as Jogador?
-        criador = intent.getBooleanExtra("criador", false)
+        supportActionBar?.title = "Fim de Jogo"
+        var db = FirebaseFirestore.getInstance()
+        var intent = intent
+//        sala = intent.getSerializableExtra(Keys.SALA.valor) as Sala?
+//        jogador = intent.getSerializableExtra(Keys.JOGADOR.valor) as Jogador?
+//        criador = intent.getBooleanExtra("criador", false)
 
 
 
+        db.collection(Keys.SALAS.valor).document(sala!!.numero.toString()).get()
+            .addOnSuccessListener { data ->
+                if (data != null) {
+                    sala = data.toObject(Sala::class.java)!!
 
+                }
+            }
     }
 }

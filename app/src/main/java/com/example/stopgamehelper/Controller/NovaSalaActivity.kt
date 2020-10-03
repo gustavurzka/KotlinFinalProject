@@ -37,6 +37,9 @@ class NovaSalaActivity : AppCompatActivity() {
         }
 
         btnCriarSala.setOnClickListener {
+            if(etItens.text.isNullOrEmpty()){
+                return@setOnClickListener
+            }
             var jogadores = mutableListOf<Jogador>()
             var alfabeto: List<String>
             if (rbFacil.isChecked) {

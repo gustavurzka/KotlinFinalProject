@@ -51,17 +51,18 @@ class FimDeRodadaFragment : Fragment() {
                 if (data != null){
                     sala = data.toObject(Sala::class.java)!!
                     if (sala.confirmacoes == sala.participantes!!.size){
-                        sala.rodadas?.add(rodada)
-                        if(criador!! && sala.status != Status.FIMDEJOGO.estado && sala.status != Status.CONTINUAR.estado) {
+                        if(criador!! && sala.status != Status.FIMDEJOGO.estado && sala.status != Status.CONTINUAR.estado && sala.status != Status.SALA_EMJOGO.estado) {
                             var dialog = AlertDialog.Builder(context)
                             dialog.setTitle("Deseja continuar?")
                             dialog.setMessage("Você pode escolher se o jogo acaba aqui ou continua")
                             dialog.setPositiveButton("Continuar", DialogInterface.OnClickListener{ dialog, which ->
                                 sala.status = Status.CONTINUAR.estado
+                                sala.rodadas?.add(rodada)
                                 db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
                             })
                             dialog.setNegativeButton("Encerrar",DialogInterface.OnClickListener{dialog, which ->
                                 sala.status = Status.FIMDEJOGO.estado
+                                sala.rodadas?.add(rodada)
                                 db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
                             })
                             dialog.show()
@@ -79,11 +80,10 @@ class FimDeRodadaFragment : Fragment() {
                             )
                         }
                         if(sala.status == Status.FIMDEJOGO.estado){
-                            var intent = Intent(context,FimDeJogoActivity::class.java).apply {
-                                putExtra(Keys.SALA.name, sala)
-                                putExtra(Keys.JOGADOR.name, jogador)
-                            }
-                            startActivity(intent)
+                            var intent = Intent(context,FimDeJogoActivity::class.java)
+                                intent.putExtra(Keys.SALA.name, sala)
+                                intent.putExtra(Keys.JOGADOR.name, jogador)
+                            (activity as SalaActivity).startActivity(intent)
                         }
                     }
                 }
