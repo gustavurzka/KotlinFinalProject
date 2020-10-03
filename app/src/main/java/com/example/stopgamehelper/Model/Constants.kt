@@ -11,7 +11,9 @@ enum class Status(var estado: Int){
      SALA_FECHADA(2),
      SALA_EMJOGO(3),
      STOP(4),
-     FIMDERODADA(5)
+     FIMDERODADA(5),
+     CONTINUAR(6),
+     FIMDEJOGO(7)
 
 }
 

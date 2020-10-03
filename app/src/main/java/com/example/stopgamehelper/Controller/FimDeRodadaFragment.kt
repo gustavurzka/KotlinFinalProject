@@ -1,60 +1,123 @@
 package com.example.stopgamehelper.Controller
 
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
+import com.example.stopgamehelper.Model.*
 import com.example.stopgamehelper.R
+import com.google.firebase.firestore.FirebaseFirestore
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FimDeRodadaFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FimDeRodadaFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    var btnEnviar: Button? = null
+    var etPontos: EditText? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_fim_de_rodada, container, false)
-    }
+        val view = inflater.inflate(R.layout.fragment_fim_de_rodada, container, false)
+        var db = FirebaseFirestore.getInstance()
+        (activity as SalaActivity).supportActionBar?.title = "Fim da rodada"
+        var jogador = arguments?.get(Keys.JOGADOR.valor) as Jogador
+        var sala = arguments?.get(Keys.SALA.valor) as Sala
+        var criador = arguments?.getBoolean("criador")
+        var rodada = arguments?.get(Keys.RODADA.valor) as Rodada
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FimDeRodadaFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FimDeRodadaFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+        btnEnviar = view.findViewById(R.id.btnEnviar)
+        etPontos = view.findViewById(R.id.etPontos)
+
+        sala.status = Status.FIMDERODADA.estado
+        db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
+
+
+        db.collection(Keys.SALAS.valor).document(sala.numero.toString())
+            .addSnapshotListener { data, error ->
+                if (error != null) {
+                    Toast.makeText(context, "Ocorreu um erro ${error.message}", Toast.LENGTH_LONG).show()
+                    return@addSnapshotListener
+                }
+                if (data != null){
+                    sala = data.toObject(Sala::class.java)!!
+                    if (sala.confirmacoes == sala.participantes!!.size){
+                        sala.rodadas?.add(rodada)
+                        if(criador!! && sala.status != Status.FIMDEJOGO.estado && sala.status != Status.CONTINUAR.estado) {
+                            var dialog = AlertDialog.Builder(context)
+                            dialog.setTitle("Deseja continuar?")
+                            dialog.setMessage("Você pode escolher se o jogo acaba aqui ou continua")
+                            dialog.setPositiveButton("Continuar", DialogInterface.OnClickListener{ dialog, which ->
+                                sala.status = Status.CONTINUAR.estado
+                                db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
+                            })
+                            dialog.setNegativeButton("Encerrar",DialogInterface.OnClickListener{dialog, which ->
+                                sala.status = Status.FIMDEJOGO.estado
+                                db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
+                            })
+                        }
+                        if(sala.status == Status.CONTINUAR.estado){
+                            val bundle = bundleOf(
+                                Keys.SALA.valor to sala,
+                                Keys.JOGADOR.valor to jogador,
+                                "criador" to criador,
+                                Keys.RODADA.valor to rodada
+                            )
+                            findNavController().navigate(
+                                R.id.action_fimDeRodadaFragment_to_emJogoFragment,
+                                bundle
+                            )
+                        }
+                        if(sala.status == Status.FIMDEJOGO.estado){
+                            var intent = Intent(context,FimDeJogoActivity::class.java).apply {
+                                putExtra(Keys.SALA.name, sala)
+                                putExtra(Keys.JOGADOR.name, jogador)
+                            }
+                            startActivity(intent)
+                        }
+                    }
                 }
             }
+
+        btnEnviar!!.setOnClickListener {
+            db.collection(Keys.SALAS.valor).document(sala.numero.toString()).get()
+                .addOnSuccessListener {
+                    sala = it.toObject(Sala::class.java)!!
+                    if (etPontos!!.text.toString().toInt() > sala.pontuacaoMax) {
+                        etPontos!!.setText("")
+                        Toast.makeText(
+                            context,
+                            "Essa pontuação não é válida pois excede o limite da sala",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        rodada.pontos?.put(jogador.nome, etPontos!!.text.toString().toInt())
+                        var aux = sala.confirmacoes
+                        if(aux != null){
+                            sala.confirmacoes = aux + 1
+                        }
+                        else{
+                            sala.confirmacoes = 1
+                        }
+                        db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
+                        btnEnviar!!.isEnabled = false
+                        Toast.makeText(
+                            context,
+                            "Pontuação enviada com sucesso",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+        }
+        return view
     }
 }

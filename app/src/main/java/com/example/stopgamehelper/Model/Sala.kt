@@ -9,6 +9,7 @@ class Sala(
     var rodadas: MutableList<Rodada>?= null,
     var letras: MutableList<String>? = null,
     var letraUsada: String? = null,
+    var confirmacoes: Int? = null
 ) : Serializable {
     var numero = 0;
     var status = 0;

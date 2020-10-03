@@ -52,7 +52,6 @@ class SalaDeEsperaFragment : Fragment() {
 
         sala.participantes?.add(jogador)
 
-
         db.collection(Keys.SALAS.valor).document(sala.numero.toString())
             .addSnapshotListener { data, error ->
                 if (error != null) {
@@ -96,9 +95,6 @@ class SalaDeEsperaFragment : Fragment() {
             sala.status = Status.SALA_FECHADA.estado
             db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
         }
-
         return view
     }
-
-
 }

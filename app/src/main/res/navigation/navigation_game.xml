@@ -39,9 +39,4 @@
             app:popUpToInclusive="true"
             />
     </fragment>
-    <fragment
-        android:id="@+id/fimDeJogoFragment"
-        android:name="com.example.stopgamehelper.Controller.FimDeJogoFragment"
-        android:label="fragment_fim_de_jogo"
-        tools:layout="@layout/fragment_fim_de_jogo" />
 </navigation>
