@@ -21,8 +21,12 @@ class FimDeJogoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sala)
         setSupportActionBar(toolbar)
-//        sala = intent.getSerializableExtra(Keys.SALA.valor) as Sala?
-//        jogador = intent.getSerializableExtra(Keys.JOGADOR.valor) as Jogador?
-//        criador = intent.getBooleanExtra("criador", false)
+        sala = intent.getSerializableExtra(Keys.SALA.valor) as Sala?
+        jogador = intent.getSerializableExtra(Keys.JOGADOR.valor) as Jogador?
+        criador = intent.getBooleanExtra("criador", false)
+
+
+
+
     }
 }

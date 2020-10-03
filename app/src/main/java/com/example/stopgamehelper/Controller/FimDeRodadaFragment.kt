@@ -64,6 +64,7 @@ class FimDeRodadaFragment : Fragment() {
                                 sala.status = Status.FIMDEJOGO.estado
                                 db.collection(Keys.SALAS.valor).document(sala.numero.toString()).set(sala)
                             })
+                            dialog.show()
                         }
                         if(sala.status == Status.CONTINUAR.estado){
                             val bundle = bundleOf(

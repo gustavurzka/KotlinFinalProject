@@ -74,6 +74,7 @@ class EmJogoFragment : Fragment() {
                             R.id.action_emJogoFragment_to_fimDeRodadaFragment,
                             bundle
                         )
+
                     }
                 }
             }
