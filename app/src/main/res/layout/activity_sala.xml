@@ -15,13 +15,39 @@
         android:theme="@style/AppTheme.Toolbar"
         app:layout_scrollFlags="scroll|enterAlways" />
 
-    <fragment
-        android:id="@+id/fragNavHost"
-        android:name="androidx.navigation.fragment.NavHostFragment"
+    <TextView
+        android:id="@+id/tvNumSala"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|center_horizontal"
+        android:text="3000"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:paddingTop="20dp"/>
+
+    <TextView
+        android:id="@+id/tvParticipantes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="participantes"
+        android:textSize="20sp"
+        android:layout_gravity="center_horizontal"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvParticipantes"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/navigation_game" />
+        android:paddingTop="20dp"/>
+
+    <Button
+        android:id="@+id/btnIniciar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_margin="30dp"
+        android:text="Começar"
+        android:textColor="@color/colorTextDark"
+        android:textSize="15sp" />
 
 </LinearLayout>

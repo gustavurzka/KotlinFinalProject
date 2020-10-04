@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Controller.EmJogoFragment">
+    tools:context=".Controller.EmJogoActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimaryDark"
+        android:theme="@style/AppTheme.Toolbar"
+        app:layout_scrollFlags="scroll|enterAlways" />
 
 
     <TextView
@@ -12,7 +21,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|center_horizontal"
-        android:text="A"
         android:textSize="220sp"
         android:textStyle="bold"
         android:layout_marginTop="30dp"
@@ -20,7 +28,7 @@
         android:paddingTop="20dp"/>
 
     <Button
-        android:id="@+id/btnStop"
+        android:id="@+id/btnParo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="STOP"
@@ -28,5 +36,6 @@
         android:layout_margin="30dp"
         android:textColor="@color/colorTextDark"
         android:background="@color/colorStopButton"/>
+
 
 </LinearLayout>

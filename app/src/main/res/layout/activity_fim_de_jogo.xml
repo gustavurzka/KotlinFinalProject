@@ -23,10 +23,9 @@
         android:layout_gravity="center|center_horizontal"
         android:textAlignment="center"
         android:layout_marginTop="20dp"
-        android:text="Sua porntuação é de: 000"
+        android:text="Sua pontuação é de: 000"
         android:textSize="30sp"
-        android:textStyle="bold"
-        />
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/btnVoltar"

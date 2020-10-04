@@ -4,6 +4,6 @@ import java.io.Serializable
 
 class Rodada(
     var letra: String = "",
-    var pontos: MutableMap<String, Int>? = null
+    var pontos: MutableList<Pontos>? = null
 ) : Serializable {
 }
